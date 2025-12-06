@@ -17,16 +17,17 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # -----------------------------
-# DATABASE MODEL (Koi change nahi)
+# DATABASE MODEL
 # -----------------------------
 class Todo(db.Model):
-    sno = db.Column(db.Integer, primary_key=True)
+    sno = db.Column(db.Integer, primary_key=True) # <--- AB YEH CORRECT HAI
     title = db.Column(db.String(200), nullable=False)
     desc = db.Column(db.String(500), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return f"{self.sno} - {self.title}"
+# ... (Routes ka code, jo class se bahar hai, woh bahar hi rahega)
 
 # -----------------------------
 # ROUTES (Koi change nahi)
