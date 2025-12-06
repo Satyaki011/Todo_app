@@ -75,15 +75,16 @@ def delete(sno):
     return redirect(url_for('index'))
 
 
+# ... code ...
+
 db = SQLAlchemy(app)
 
-# --- NEW CODE BLOCK: Ensures tables exist when Gunicorn runs the app ---
 with app.app_context():
-    db.create_all()
-# ---------------------------------------------------------------------
+    db.create_all() # <-- Yeh line yahan sahi hai
 
 # -----------------------------
 # DATABASE MODEL
 # -----------------------------
-class Todo(db.Model):
-# ... (Rest of your file remains the same)
+class Todo(db.Model): # <-- Line 88
+sno = db.Column(db.Integer, primary_key=True) # <-- Yahan indentation missing hai
+# ...
