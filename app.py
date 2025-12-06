@@ -1,23 +1,23 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import os
+import os # <-- os module ab zaroori hai
 
 # -----------------------------
 # APP SETUP
 # -----------------------------
 app = Flask(__name__)
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-DB_PATH = os.path.join(BASE_DIR, "todo.db")
-
-app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DB_PATH}"
+# NOTE: Local SQLite setup ko hata diya gaya hai.
+# Ab hum Render ke Environment Variable ka use karenge.
+# os.environ.get("DATABASE_URL") secure tarika hai.
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
 # -----------------------------
-# DATABASE MODEL
+# DATABASE MODEL (Koi change nahi)
 # -----------------------------
 class Todo(db.Model):
     sno = db.Column(db.Integer, primary_key=True)
@@ -29,7 +29,7 @@ class Todo(db.Model):
         return f"{self.sno} - {self.title}"
 
 # -----------------------------
-# ROUTES
+# ROUTES (Koi change nahi)
 # -----------------------------
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -50,7 +50,7 @@ def index():
 @app.route('/show')
 def show():
     allTodo = Todo.query.all()
-    print(allTodo)   # Shown only in terminal (Mac Terminal)
+    print(allTodo)
     return "This is products page"
 
 
@@ -76,9 +76,11 @@ def delete(sno):
 
 
 # -----------------------------
-# RUN APP
+# RUN APP (Local testing ke liye)
 # -----------------------------
 if __name__ == "__main__":
     with app.app_context():
-        db.create_all()  # auto-create DB on Mac
+        # Tables create karne ke liye
+        db.create_all()
+    # Ye settings sirf local chalaane ke liye hai
     app.run(debug=True, port=8000)
