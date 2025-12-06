@@ -1,36 +1,40 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import os # <-- os module ab zaroori hai
+import os
 
 # -----------------------------
 # APP SETUP
 # -----------------------------
 app = Flask(__name__)
 
-# NOTE: Local SQLite setup ko hata diya gaya hai.
-# Ab hum Render ke Environment Variable ka use karenge.
-# os.environ.get("DATABASE_URL") secure tarika hai.
+# --- DATABASE CONFIGURATION ---
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+# --- CRITICAL FIX: Run db.create_all() at startup for Render ---
+# Yeh code Gunicorn ke load hote hi chalega aur tables bana dega.
+with app.app_context():
+    db.create_all()
+# -------------------------------------------------------------
+
 # -----------------------------
 # DATABASE MODEL
 # -----------------------------
 class Todo(db.Model):
-    sno = db.Column(db.Integer, primary_key=True) # <--- AB YEH CORRECT HAI
+    # Dhyan dein, yeh saari lines class ke andar 4 spaces indent honi chahiye
+    sno = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     desc = db.Column(db.String(500), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return f"{self.sno} - {self.title}"
-# ... (Routes ka code, jo class se bahar hai, woh bahar hi rahega)
 
 # -----------------------------
-# ROUTES (Koi change nahi)
+# ROUTES
 # -----------------------------
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -76,16 +80,9 @@ def delete(sno):
     return redirect(url_for('index'))
 
 
-# ... code ...
-
-db = SQLAlchemy(app)
-
-with app.app_context():
-    db.create_all() # <-- Yeh line yahan sahi hai
-
 # -----------------------------
-# DATABASE MODEL
+# RUN APP (Local testing only)
 # -----------------------------
-class Todo(db.Model): # <-- Line 88
-sno = db.Column(db.Integer, primary_key=True) # <-- Yahan indentation missing hai
-# ...
+if __name__ == "__main__":
+    # db.create_all() yahan se hata diya gaya hai, kyunki woh upar run hoga.
+    app.run(debug=True, port=8000)
