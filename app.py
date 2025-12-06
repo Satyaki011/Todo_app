@@ -75,12 +75,15 @@ def delete(sno):
     return redirect(url_for('index'))
 
 
+db = SQLAlchemy(app)
+
+# --- NEW CODE BLOCK: Ensures tables exist when Gunicorn runs the app ---
+with app.app_context():
+    db.create_all()
+# ---------------------------------------------------------------------
+
 # -----------------------------
-# RUN APP (Local testing ke liye)
+# DATABASE MODEL
 # -----------------------------
-if __name__ == "__main__":
-    with app.app_context():
-        # Tables create karne ke liye
-        db.create_all()
-    # Ye settings sirf local chalaane ke liye hai
-    app.run(debug=True, port=8000)
+class Todo(db.Model):
+# ... (Rest of your file remains the same)
