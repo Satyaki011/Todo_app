@@ -115,3 +115,4 @@ if __name__ == "__main__":
     # We call the function here just in case you run locally
     ensure_db_tables_exist() 
     app.run(debug=True, port=8000)
+    #alik
